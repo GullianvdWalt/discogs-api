@@ -101,7 +101,6 @@ public class DiscogsServiceImpl implements DiscogsService{
                     accessToken.toOAuthConsumerToken(), "GET");
             Scanner s = new Scanner(inputStream).useDelimiter("\\A");
             String json = s.hasNext() ? s.next() : "";
-            System.out.println(json);
             s.close();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -129,19 +128,21 @@ public class DiscogsServiceImpl implements DiscogsService{
     @Override
     public String getUserSubmissions(JpaOAuthConsumerToken accessToken) {
         rateLimiter.acquire();
-        String username = "";
+        String submissions = "";
+        String json = "";
         try {
             InputStream inputStream = consumerSupport.readProtectedResource(new URL(USER_SUBMISSIONS_URL),
                     accessToken.toOAuthConsumerToken(), "GET");
             Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-            String json = s.hasNext() ? s.next() : "";
+            json = s.hasNext() ? s.next() : "";
             System.out.println(json);
             s.close();
 
             ObjectMapper mapper = new ObjectMapper();
             HashMap<String, String> map = mapper.readValue(json, new TypeReference<HashMap<String, String>>() {
             });
-            username = map.get("username");
+            System.out.println(map);
+//            submissions = map.get
 
         } catch (OAuthRequestFailedException e) {
             // TODO Not authenticated.
@@ -157,7 +158,7 @@ public class DiscogsServiceImpl implements DiscogsService{
             e.printStackTrace();
         }
 
-        return username;
+        return json;
     }
 
 //    @Override

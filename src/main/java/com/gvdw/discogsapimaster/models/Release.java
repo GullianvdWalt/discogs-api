@@ -8,7 +8,8 @@ import javax.persistence.Table;
  * @author Gullian Van Der Walt
  * Created at 12:23 on May, 2021
  */
-@Entity
+//@Entity
+//@Table(name = "release")
 public class Release {
     @Id
     private String id;

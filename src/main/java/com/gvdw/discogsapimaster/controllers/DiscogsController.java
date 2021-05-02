@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Gullian Van Der Walt
@@ -38,6 +39,7 @@ public class DiscogsController {
 
     @GetMapping("/")
     public ModelAndView getHome() {
+
         return new ModelAndView("index");
     }
 
@@ -45,12 +47,11 @@ public class DiscogsController {
     public RedirectView login1(HttpSession session) {
         RedirectView rv = new RedirectView();
         String appBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-//        JpaOAuthConsumerToken testToken = tokenStore.getOne("3EDFB78126E557DD23633CAE4E83F627");
-//        String token = testToken.getOauthToken();
+        JpaOAuthConsumerToken testToken = tokenStore.findAll().get(0);
         OAuthConsumerToken requestToken = discogsService.fetchRequestToken(appBaseUrl + OAUTH_CALLBACK);
         JpaOAuthConsumerToken jpaToken = new JpaOAuthConsumerToken(session.getId(), requestToken);
         tokenStore.save(jpaToken);
-        rv.setUrl(DiscogsService.AUTHORIZATION_URL + "?oauth_token=" + requestToken.getValue());
+                rv.setUrl(DiscogsService.AUTHORIZATION_URL + "?oauth_token=" + requestToken.getValue());
         return rv;
     }
 
@@ -62,12 +63,11 @@ public class DiscogsController {
         } else if (requestParams.containsKey("oauth_token") && requestParams.containsKey("oauth_verifier")) {
             JpaOAuthConsumerToken requestToken = tokenStore.findById(session.getId()).orElseThrow();
             // TODO check if request token is already an access token (that means OAuth has been completed).
-            OAuthConsumerToken accessToken = discogsService.fetchAccessToken(requestToken.toOAuthConsumerToken(),
+                        OAuthConsumerToken accessToken = discogsService.fetchAccessToken(requestToken.toOAuthConsumerToken(),
                     requestParams.get("oauth_verifier"));
             JpaOAuthConsumerToken jpaToken = new JpaOAuthConsumerToken(session.getId(), accessToken);
             jpaToken.setUsername(discogsService.getUserName(jpaToken));
             tokenStore.save(jpaToken);
-            System.out.println(discogsService.getUserSubmissions(jpaToken));
             mv.addObject("username", jpaToken.getUsername());
             mv.setViewName("index");
         } else {
@@ -76,5 +76,41 @@ public class DiscogsController {
             throw new IllegalArgumentException("Unrecognised OAuth response from Discogs");
         }
         return mv;
+    }
+    @GetMapping("/checkUserAuth")
+    public ModelAndView checkUserAuth(HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        String sessionId = session.getId();
+        mv.addObject("isAuthenticated", authCheck());
+        mv.setViewName("index");
+        return mv;
+    }
+    @GetMapping("/getUserSubmissions")
+    public ModelAndView getUserSubmissions(HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        String sessionId = session.getId();
+        if(authCheck()){
+            JpaOAuthConsumerToken userToken = tokenStore.findAll().get(0);
+            mv.addObject("submissions", discogsService.getUserSubmissions(userToken));
+        }
+
+        mv.setViewName("index");
+        return mv;
+    }
+    /**
+     * Check to see if a user is authenticated before we send requests.
+     */
+    private boolean authCheck() {
+        Optional<JpaOAuthConsumerToken> userToken = Optional.ofNullable(tokenStore.findAll().get(0));
+        if (userToken.isPresent()) {
+            if (userToken.get().isAccessToken()) {
+                return true;
+            } else {
+                throw new IllegalStateException(
+                        "OAuth process not complete (it was started, but we have no access token)");
+            }
+        } else {
+            throw new IllegalStateException("User not found in OAuth data store. ");
+        }
     }
 }
