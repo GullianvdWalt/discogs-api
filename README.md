@@ -15,7 +15,7 @@ Demo Spring Boot App that consumes Discogs API.
 
 I created this project to help me understand how to use Discogs API.
 
-# What I Learned
+## What I Learned
 
 <ul>
   <li>Spring constructor injection.</li>
