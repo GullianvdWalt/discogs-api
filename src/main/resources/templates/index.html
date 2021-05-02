@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Discogs API</title>
 </head>
 <body>
-
+    <div style="margin: 0; padding: 1rem;">
+        <form method="get" action="/login">
+            <input type="submit" value="Login" />
+        </form>
+    </div>
+<h1 th:text="${username}"></h1>
 </body>
 </html>
