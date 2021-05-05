@@ -21,4 +21,5 @@ I created this project to help me understand how to use Discogs API.
   <li>Spring constructor injection.</li>
    <li>OAuth 1 with Spring boot.</li>
    <li>Get JSON data with Spring boot.</li>
+  <li>Retreave JSON from various API endpoints</li>
 </ul>
