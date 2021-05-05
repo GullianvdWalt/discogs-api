@@ -1,11 +1,14 @@
 package com.gvdw.discogsapimaster.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.util.concurrent.RateLimiter;
 import com.gvdw.discogsapimaster.models.JpaOAuthConsumerToken;
+import com.gvdw.discogsapimaster.models.Release;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.oauth.common.signature.SharedConsumerSecretImpl;
@@ -17,9 +20,11 @@ import org.springframework.security.oauth.consumer.client.CoreOAuthConsumerSuppo
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -160,6 +165,79 @@ public class DiscogsServiceImpl implements DiscogsService{
 
         return json;
     }
+
+    @Override
+    public String getUserCollection(JpaOAuthConsumerToken accessToken) {
+        rateLimiter.acquire();
+        String submissions = "";
+        String json = "";
+        try {
+            InputStream inputStream = consumerSupport.readProtectedResource(new URL(USER_COLLECTION_URL),
+                    accessToken.toOAuthConsumerToken(), "GET");
+            Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+            json = s.hasNext() ? s.next() : "";
+            System.out.println(json);
+            s.close();
+
+            ObjectMapper mapper = new ObjectMapper();
+            HashMap<String, String> map = mapper.readValue(json, new TypeReference<HashMap<String, String>>() {
+            });
+            System.out.println(map);
+//            submissions = map.get
+
+        } catch (OAuthRequestFailedException e) {
+            // TODO Not authenticated.
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO URL parsing error (not likely)
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            // TODO Could not map JSON properly (not likely)
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+    @Override
+    public String getRelease(JpaOAuthConsumerToken accessToken) {
+        rateLimiter.acquire();
+        String submissions = "";
+        String json = "";
+        try {
+            InputStream inputStream = consumerSupport.readProtectedResource(new URL(DISCOGS_GET_RELEASE_URL),
+                    accessToken.toOAuthConsumerToken(), "GET");
+            Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+            json = s.hasNext() ? s.next() : "";
+            System.out.println(json);
+            s.close();
+
+            ObjectMapper mapper = new ObjectMapper();
+            HashMap<String, String> map = mapper.readValue(json, new TypeReference<HashMap<String, String>>() {
+            });
+            System.out.println(map);
+//            submissions = map.get
+
+        } catch (OAuthRequestFailedException e) {
+            // TODO Not authenticated.
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO URL parsing error (not likely)
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            // TODO Could not map JSON properly (not likely)
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
 
 //    @Override
 //    public JpaOAuthConsumerToken createTestAccessToken(String sessionId) {

@@ -31,7 +31,7 @@ public class DiscogsController {
     // Constructor Injection
     private final DiscogsService discogsService;
     private final ConsumerTokenRepository tokenStore;
-
+    @Autowired
     public DiscogsController(DiscogsService discogsService, ConsumerTokenRepository tokenStore) {
         this.discogsService = discogsService;
         this.tokenStore = tokenStore;
@@ -97,6 +97,31 @@ public class DiscogsController {
         mv.setViewName("index");
         return mv;
     }
+
+    @GetMapping("/getUserCollection")
+    public ModelAndView getUserCollection(HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        String sessionId = session.getId();
+        if(authCheck()){
+            JpaOAuthConsumerToken userToken = tokenStore.findAll().get(0);
+            mv.addObject("collection", discogsService.getUserCollection(userToken));
+        }
+        mv.setViewName("index");
+        return mv;
+    }
+
+    @GetMapping("/release")
+    public ModelAndView getRelease(HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        String sessionId = session.getId();
+        if(authCheck()){
+            JpaOAuthConsumerToken userToken = tokenStore.findAll().get(0);
+            mv.addObject("release", discogsService.getRelease(userToken));
+        }
+        mv.setViewName("index");
+        return mv;
+    }
+
     /**
      * Check to see if a user is authenticated before we send requests.
      */
