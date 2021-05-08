@@ -17,9 +17,9 @@ public interface DiscogsService {
     public final String AUTHORIZATION_URL = "https://www.discogs.com/oauth/authorize";
     public final String ACCESS_TOKEN_URL = "https://api.discogs.com/oauth/access_token";
     public final String IDENTITY_CHECK_URL = "https://api.discogs.com/oauth/identity";
-    public final String USER_SUBMISSIONS_URL = "https://api.discogs.com//users/gullian101/submissions";
-    public final String USER_COLLECTION_URL = "https://api.discogs.com//users/gullian101/collection/folders/0/releases";
-    public final String ITEM_BY_RELEASE_URL = "https://api.discogs.com//users/gullian101/collection/releases/2890309";
+    public final String USER_SUBMISSIONS_URL = "https://api.discogs.com/users/gullian101/submissions";
+    public final String USER_COLLECTION_URL = "https://api.discogs.com/users/gullian101/collection/folders/0/releases";
+    public final String ITEM_BY_RELEASE_URL = "https://api.discogs.com/users/gullian101/collection/releases/2890309";
     public final String USER_AGENT = "discogs-api-master/0.0.1 +http:/gvdw.com";
     public final String DISCOGS_SEARCH_URL = "https://api.discogs.com/database/search";
     public final String DISCOGS_GET_RELEASE_URL = "https://api.discogs.com/database/search?release_title=nevermind&artist=nirvana&type=master&format=vinyl&page=1";
